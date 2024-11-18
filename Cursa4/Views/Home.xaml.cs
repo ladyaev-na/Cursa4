@@ -10,19 +10,9 @@ public partial class Home : ContentPage
     public Home(User user, string token)
     {
         InitializeComponent();
-        
-       
 
-        if (user == null)
-        {
-            throw new ArgumentNullException(nameof(user), "Пользователь не определен");
-        }
-
-         _user = user;
+        _user = user;
         _token = token;
-
-        UserNameLabel.Text = user.Name;
-
     }
 
     private async void OnImageTapped(object sender, TappedEventArgs e)

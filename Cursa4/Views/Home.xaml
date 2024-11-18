@@ -2,8 +2,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Cursa4.Views.Home"
-             Title="Home"
-             MaximumWidthRequest="500">
+             Title="Доход"
+             Background="LightGray">
     
   
 
@@ -42,7 +42,6 @@
         <!-- Акции -->
 
 
-        <Label x:Name="name" VerticalOptions="Center" FontAttributes="Bold" FontSize="18"></Label>
 
         <StackLayout Orientation="Horizontal" Spacing="5" Background="White" VerticalOptions="EndAndExpand" HorizontalOptions="Center" >
             <Image Source="profile.png" WidthRequest="50">
@@ -62,6 +61,5 @@
             </Image>
         </StackLayout>
 
-        <Label x:Name="UserNameLabel" FontAttributes="Bold" FontSize="18" HorizontalOptions="Center" />
     </VerticalStackLayout>
 </ContentPage>

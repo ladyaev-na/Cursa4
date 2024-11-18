@@ -4,6 +4,19 @@
              x:Class="Cursa4.Views.Profile"
              Title="Profile">
 
-    <Label x:Name="name" VerticalOptions="Center" FontAttributes="Bold" FontSize="18"></Label>
-    
+    <StackLayout VerticalOptions="CenterAndExpand" HorizontalOptions="Center">
+        <Label x:Name="name" VerticalOptions="Center" HorizontalOptions="Center" FontAttributes="Bold" FontSize="18"/>
+        <Entry x:Name="editName" Placeholder="Имя" HorizontalOptions="Center"/>
+
+        <Label x:Name="surname" VerticalOptions="Center" HorizontalOptions="Center" FontAttributes="Bold" FontSize="18"/>
+        <Entry x:Name="editSurname" Placeholder="Фамилия" HorizontalOptions="Center"/>
+
+        <Label x:Name="patronymic" VerticalOptions="Center" HorizontalOptions="Center" FontAttributes="Bold" FontSize="18"/>
+        <Entry x:Name="editPatronymic" Placeholder="Отчество" HorizontalOptions="Center"/>
+
+        <Label x:Name="login" VerticalOptions="Center" HorizontalOptions="Center" FontAttributes="Bold" FontSize="18"/>
+        <Entry x:Name="editLogin" Placeholder="Логин" HorizontalOptions="Center"/>
+
+        <Button Text="Сохранить" Clicked="OnSaveButtonClicked" HorizontalOptions="Center"/>
+    </StackLayout>
 </ContentPage>

@@ -52,7 +52,6 @@ public partial class Login : ContentPage
 
                 if (result?.Token != null)
                 {
-                    // Возвращаем весь объект, включая данные пользователя и токен
                     return result;
                 }
                 else
@@ -60,7 +59,6 @@ public partial class Login : ContentPage
                     await DisplayAlert("Ошибка", "Не удалось получить токен", "OK");
                 }
             }
-            // Если ответ 401
             else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
                 await DisplayAlert("Ошибка входа", "Неправильный логин или пароль", "OK");
