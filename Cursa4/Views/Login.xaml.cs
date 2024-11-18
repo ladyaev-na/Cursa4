@@ -7,15 +7,16 @@ namespace Cursa4.Views;
 public partial class Login : ContentPage
 {
     private readonly HttpClient _httpClient = new HttpClient();
+
     public Login()
-	{
-		InitializeComponent();
-	}
+    {
+        InitializeComponent();
+    }
 
     private async void OnLoginButtonClicked(object sender, EventArgs e)
     {
-       string login = LoginEntry.Text;
-       string password = PasswordEntry.Text;
+        string login = LoginEntry.Text;
+        string password = PasswordEntry.Text;
 
         if (string.IsNullOrEmpty(login) || string.IsNullOrEmpty(password))
         {
@@ -34,7 +35,7 @@ public partial class Login : ContentPage
     {
         // Формирование тела для отправки
         var loginData = new { login, password };
-        // Преобразрования данных в JSON для отправки
+        // Преобразование данных в JSON для отправки
         var jsonContent = new StringContent(JsonSerializer.Serialize(loginData), Encoding.UTF8, "application/json");
 
         // Запрос серверу
@@ -53,6 +54,10 @@ public partial class Login : ContentPage
                 {
                     // Возвращаем весь объект, включая данные пользователя и токен
                     return result;
+                }
+                else
+                {
+                    await DisplayAlert("Ошибка", "Не удалось получить токен", "OK");
                 }
             }
             // Если ответ 401

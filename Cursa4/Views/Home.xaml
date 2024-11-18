@@ -2,11 +2,66 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Cursa4.Views.Home"
-             Title="Home">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+             Title="Home"
+             MaximumWidthRequest="500">
+    
+  
+
+    <VerticalStackLayout Padding="30">
+
+        <!-- Чайвые -->
+        <Label Text="чаевые" Padding="5"/>
+        <StackLayout Background="White" Padding="10">
+            <Label Text="Ура! Теперь твои чаевые будут приходить на карту через «СберЧаевые»."/>
+            <Label>
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span Text="Сейчас статистику можно посмотреть по "/>
+                        <Span Text="ссылке" TextColor="Blue" TextDecorations="Underline">
+                            <Span.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnLinkTapped"/>
+                            </Span.GestureRecognizers>
+                        </Span>
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+        </StackLayout>
+        
+        <!-- Статистика -->
+        <StackLayout Background="White">
+            <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+                <Button Text="За неделю" Background="LightGray"/>
+                <Button Text="За месяц" Background="LightGray"/>
+            </StackLayout>
+
+            <StackLayout>
+                <Button Text="Подробная статистика"/>
+            </StackLayout>
+        </StackLayout>
+        
+        <!-- Акции -->
+
+
+        <Label x:Name="name" VerticalOptions="Center" FontAttributes="Bold" FontSize="18"></Label>
+
+        <StackLayout Orientation="Horizontal" Spacing="5" Background="White" VerticalOptions="EndAndExpand" HorizontalOptions="Center" >
+            <Image Source="profile.png" WidthRequest="50">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnImageTapped" />
+                </Image.GestureRecognizers>
+            </Image>
+            <Image Source="profile.png" WidthRequest="50">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnImageTapped" />
+                </Image.GestureRecognizers>
+            </Image>
+            <Image Source="profile.png" WidthRequest="50">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnImageTapped" />
+                </Image.GestureRecognizers>
+            </Image>
+        </StackLayout>
+
+        <Label x:Name="UserNameLabel" FontAttributes="Bold" FontSize="18" HorizontalOptions="Center" />
     </VerticalStackLayout>
 </ContentPage>
