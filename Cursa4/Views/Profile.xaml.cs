@@ -1,10 +1,10 @@
-using Cursa4.Models;
 using System;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Maui.Controls;
+using Cursa4.Models;
 
 namespace Cursa4.Views;
 
@@ -17,63 +17,107 @@ public partial class Profile : ContentPage
     public Profile(User user, string token)
     {
         InitializeComponent();
-
         _user = user;
         _token = token;
-
-        name.Text = user.Name;
-        surname.Text = user.Surname;
-        patronymic.Text = user.Patronymic;
-        login.Text = user.Login;
-
-        editName.Text = user.Name;
-        editSurname.Text = user.Surname;
-        editPatronymic.Text = user.Patronymic;
-        editLogin.Text = user.Login;
+        surnameLabel.Text = user.Surname;
+        nameLabel.Text = user.Name;
+        patronymicLabel.Text = user.Patronymic ?? "";
+        loginLabel.Text = user.Login;
+        passwordLabel.Text = user.Password;
     }
 
     private async void OnSaveButtonClicked(object sender, EventArgs e)
     {
-        _user.Name = editName.Text;
-        _user.Surname = editSurname.Text;
-        _user.Patronymic = editPatronymic.Text;
-        _user.Login = editLogin.Text;
+        // Проверка на пустые поля
+        if (string.IsNullOrWhiteSpace(surnameLabel.Text) ||
+            string.IsNullOrWhiteSpace(nameLabel.Text) ||
+            string.IsNullOrWhiteSpace(loginLabel.Text) ||
+            string.IsNullOrWhiteSpace(passwordLabel.Text))
+        {
+            await DisplayAlert("Ошибка", "Все обязательные поля должны быть заполнены", "ОК");
+            return;
+        }
 
-        // Отправка запроса на сервер
-        await UpdateProfile(_user);
-    }
+        if (passwordLabel.Text != confirmPasswordLabel.Text)
+        {
+            await DisplayAlert("Ошибка", "Пароли не совпадают", "ОК");
+            return;
+        }
 
-    private async Task UpdateProfile(User user)
-    {
-        // Формирование тела для отправки
-        var jsonContent = new StringContent(JsonSerializer.Serialize(user), Encoding.UTF8, "application/json");
-        Console.WriteLine(JsonSerializer.Serialize(user)); // Отладочный вывод
+        // Формируем данные для обновления
+        var updatedUser = new
+        {
+            Surname = surnameLabel.Text,
+            Name = nameLabel.Text,
+            Patronymic = string.IsNullOrEmpty(patronymicLabel.Text) ? null : patronymicLabel.Text,
+            Login = loginLabel.Text,
+            Password = passwordLabel.Text
+        };
 
+        // Настраиваем сериализацию для преобразования ключей в нижний регистр
+        var options = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase // Преобразует ключи в camelCase
+        };
+        var jsonContent = new StringContent(JsonSerializer.Serialize(updatedUser, options), Encoding.UTF8, "application/json");
+
+        // Логирование данных перед отправкой
+        Console.WriteLine($"Sending data: {JsonSerializer.Serialize(updatedUser, options)}");
+
+        // Запрос серверу
         try
         {
-            // Установка заголовка авторизации
-            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _token);
+            // Устанавливаем заголовок авторизации
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _token);
 
-            // Формирование URL
-            var url = $"http://courseproject4/api/profile/{user.Id}";
+            // Отправляем PUT-запрос
+            HttpResponseMessage response = await _httpClient.PutAsync($"http://courseproject4/api/profile/{_user.Id}", jsonContent);
 
-            HttpResponseMessage response = await _httpClient.PostAsync(url, jsonContent);
+            // Логирование ответа
+            var responseContent = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Response: {responseContent}");
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                var responseContent = await response.Content.ReadAsStringAsync();
-                var updatedUser = JsonSerializer.Deserialize<User>(responseContent);
+                // Обновляем данные пользователя
+                _user.Surname = updatedUser.Surname;
+                _user.Name = updatedUser.Name;
+                _user.Patronymic = updatedUser.Patronymic;
+                _user.Login = updatedUser.Login;
+                _user.Password = updatedUser.Password;
 
-                await DisplayAlert("Успех", "Профиль успешно обновлен.", "OK");
+                // Сохраняем данные в Preferences
+                Preferences.Set("UserSurname", updatedUser.Surname);
+                Preferences.Set("UserName", updatedUser.Name);
+                Preferences.Set("UserPatronymic", updatedUser.Patronymic ?? "");
+                Preferences.Set("UserLogin", updatedUser.Login);
+                Preferences.Set("UserPassword", updatedUser.Password);
+
+                // Обновляем UI
+                surnameLabel.Text = updatedUser.Surname;
+                nameLabel.Text = updatedUser.Name;
+                patronymicLabel.Text = updatedUser.Patronymic ?? "";
+                loginLabel.Text = updatedUser.Login;
+                passwordLabel.Text = updatedUser.Password;
+
+                await DisplayAlert("Успех", "Профиль успешно обновлен!", "OK");
+                await Navigation.PushAsync(new Profile(_user, _token));
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                await DisplayAlert("Ошибка", "Сессия истекла. Авторизуйтесь снова.", "OK");
+                await Navigation.PushAsync(new Views.Login());
             }
             else
             {
-                await DisplayAlert("Ошибка", "Не удалось обновить профиль.", "OK");
+                await DisplayAlert("Ошибка", $"Не удалось обновить профиль: {responseContent}", "OK");
             }
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Ошибка сети", ex.Message, "ОК");
+            Console.WriteLine($"Exception: {ex.Message}");
+            await DisplayAlert("Ошибка", $"Произошла ошибка: {ex.Message}", "OK");
         }
     }
 }
