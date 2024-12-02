@@ -39,5 +39,23 @@ namespace Cursa4.Models
 
         [JsonPropertyName("updated_at")]
         public DateTime UpdatedAt { get; set; }
+
+        public string Role
+        {
+            get
+            {
+                switch (RoleId)
+                {
+                    case 1:
+                        return "Администратор";
+                    case 2:
+                        return "Курьер";
+                    case 3:
+                        return "Координатор";
+                    default:
+                        return "Неизвестная роль";
+                }
+            }
+        }
     }
 }

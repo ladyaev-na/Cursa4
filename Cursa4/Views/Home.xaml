@@ -43,18 +43,18 @@
 
 
 
-        <StackLayout Orientation="Horizontal" Spacing="5" Background="White" VerticalOptions="EndAndExpand" HorizontalOptions="Center" >
-            <Image Source="profile.png" WidthRequest="50">
+        <StackLayout Orientation="Horizontal" Spacing="15" Background="White"  HorizontalOptions="Center" >
+            <Image Source="menu.png" WidthRequest="30">
                 <Image.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnImageTapped" />
                 </Image.GestureRecognizers>
             </Image>
-            <Image Source="profile.png" WidthRequest="50">
+            <Image Source="many.png" WidthRequest="30">
                 <Image.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnImageTapped" />
                 </Image.GestureRecognizers>
             </Image>
-            <Image Source="profile.png" WidthRequest="50">
+            <Image Source="profile.png" WidthRequest="30">
                 <Image.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnImageTapped" />
                 </Image.GestureRecognizers>

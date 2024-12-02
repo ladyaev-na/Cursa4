@@ -4,58 +4,31 @@
              x:Class="Cursa4.Views.Profile"
              Title="Профиль">
 
-    <StackLayout VerticalOptions="CenterAndExpand" HorizontalOptions="Center">
-        <!-- Поля для ввода -->
-        <Frame Padding="10" CornerRadius="10" BackgroundColor="White" BorderColor="Gray" Margin="0,5">
-            <StackLayout>
-                <Label Text="Фамилия" FontAttributes="Bold" />
-                <Entry x:Name="surnameLabel" Placeholder="Введите фамилию" BackgroundColor="#F5F5F5"/>
-            </StackLayout>
-        </Frame>
 
-        <Frame Padding="10" CornerRadius="10" BackgroundColor="White" BorderColor="Gray" Margin="0,5">
-            <StackLayout>
-                <Label Text="Имя" FontAttributes="Bold" />
-                <Entry x:Name="nameLabel" Placeholder="Введите имя" BackgroundColor="#F5F5F5"/>
-            </StackLayout>
-        </Frame>
 
-        <Frame Padding="10" CornerRadius="10" BackgroundColor="White" BorderColor="Gray" Margin="0,5">
-            <StackLayout>
-                <Label Text="Отчество" FontAttributes="Bold" />
-                <Entry x:Name="patronymicLabel" Placeholder="Введите отчество" BackgroundColor="#F5F5F5"/>
-            </StackLayout>
-        </Frame>
+    <StackLayout>
 
-        <Frame Padding="10" CornerRadius="10" BackgroundColor="White" BorderColor="Gray" Margin="0,5">
-            <StackLayout>
-                <Label Text="Логин" FontAttributes="Bold" />
-                <Entry x:Name="loginLabel" Placeholder="Введите логин" BackgroundColor="#F5F5F5"/>
-            </StackLayout>
-        </Frame>
+        <StackLayout>
+            <Label Text="{Binding Name}"/>
+            <Label Text="{Binding Role}" />
+        </StackLayout>
 
-        <Frame Padding="10" CornerRadius="10" BackgroundColor="White" BorderColor="Gray" Margin="0,5">
-            <StackLayout>
-                <Label Text="Пароль" FontAttributes="Bold" />
-                <Entry x:Name="passwordLabel" Placeholder="Введите пароль" IsPassword="True" BackgroundColor="#F5F5F5"/>
-            </StackLayout>
-        </Frame>
+        <StackLayout>
+            <Label Text="Полезные контакты"/>
 
-        <Frame Padding="10" CornerRadius="10" BackgroundColor="White" BorderColor="Gray" Margin="0,5">
-            <StackLayout>
-                <Label Text="Подтвердите пароль" FontAttributes="Bold" />
-                <Entry x:Name="confirmPasswordLabel" Placeholder="Подтвердите пароль" IsPassword="True" BackgroundColor="#F5F5F5"/>
-            </StackLayout>
-        </Frame>
-
-        <!-- Кнопка сохранения -->
-        <Button Text="Сохранить" 
-                    Clicked="OnSaveButtonClicked" 
-                    FontAttributes="Bold" 
-                    TextColor="White" 
-                    BackgroundColor="#6200EE"
-                    CornerRadius="25" 
-                    Padding="15" 
-                    Margin="0,20,0,0"/>
+            <CollectionView x:Name="ContactsCollectionView" ItemsSource="{Binding AllUsers}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <StackLayout>
+                            <Label Text="{Binding Name}" />
+                            <Label Text="{Binding Role}" />
+                        </StackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </StackLayout>
+        
+        <Button Text="Редактирование" Clicked="ButtonUserEdit"/>
+        
     </StackLayout>
 </ContentPage>

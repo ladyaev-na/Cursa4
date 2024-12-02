@@ -1,10 +1,9 @@
-using System;
-using System.Net.Http;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using Microsoft.Maui.Controls;
+п»ї
 using Cursa4.Models;
+using Cursa4.Views.Users;
+using System.Collections.ObjectModel;
+using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace Cursa4.Views;
 
@@ -13,111 +12,55 @@ public partial class Profile : ContentPage
     private readonly HttpClient _httpClient = new HttpClient();
     private User _user;
     private string _token;
+    public ObservableCollection<User> Users { get; set; } = new ObservableCollection<User>();
+
 
     public Profile(User user, string token)
     {
         InitializeComponent();
+
         _user = user;
         _token = token;
-        surnameLabel.Text = user.Surname;
-        nameLabel.Text = user.Name;
-        patronymicLabel.Text = user.Patronymic ?? "";
-        loginLabel.Text = user.Login;
-        passwordLabel.Text = user.Password;
+
+        UsersCollectionView.ItemsSource = Users;
+        LoadUsers();
     }
-
-    private async void OnSaveButtonClicked(object sender, EventArgs e)
+    private async void LoadUsers()
     {
-        // Проверка на пустые поля
-        if (string.IsNullOrWhiteSpace(surnameLabel.Text) ||
-            string.IsNullOrWhiteSpace(nameLabel.Text) ||
-            string.IsNullOrWhiteSpace(loginLabel.Text) ||
-            string.IsNullOrWhiteSpace(passwordLabel.Text))
-        {
-            await DisplayAlert("Ошибка", "Все обязательные поля должны быть заполнены", "ОК");
-            return;
-        }
-
-        if (passwordLabel.Text != confirmPasswordLabel.Text)
-        {
-            await DisplayAlert("Ошибка", "Пароли не совпадают", "ОК");
-            return;
-        }
-
-        // Формируем данные для обновления
-        var updatedUser = new
-        {
-            Surname = surnameLabel.Text,
-            Name = nameLabel.Text,
-            Patronymic = string.IsNullOrEmpty(patronymicLabel.Text) ? null : patronymicLabel.Text,
-            Login = loginLabel.Text,
-            Password = passwordLabel.Text
-        };
-
-        // Настраиваем сериализацию для преобразования ключей в нижний регистр
-        var options = new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase // Преобразует ключи в camelCase
-        };
-        var jsonContent = new StringContent(JsonSerializer.Serialize(updatedUser, options), Encoding.UTF8, "application/json");
-
-        // Логирование данных перед отправкой
-        Console.WriteLine($"Sending data: {JsonSerializer.Serialize(updatedUser, options)}");
-
-        // Запрос серверу
         try
         {
-            // Устанавливаем заголовок авторизации
+            var token = Preferences.Get("UserToken", string.Empty);
+
             _httpClient.DefaultRequestHeaders.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _token);
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-            // Отправляем PUT-запрос
-            HttpResponseMessage response = await _httpClient.PutAsync($"http://courseproject4/api/profile/{_user.Id}", jsonContent);
+            var response = await _httpClient.GetAsync("http://courseproject4/api/profile");
 
-            // Логирование ответа
-            var responseContent = await response.Content.ReadAsStringAsync();
-            Console.WriteLine($"Response: {responseContent}");
-
-            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            if (response.IsSuccessStatusCode)
             {
-                // Обновляем данные пользователя
-                _user.Surname = updatedUser.Surname;
-                _user.Name = updatedUser.Name;
-                _user.Patronymic = updatedUser.Patronymic;
-                _user.Login = updatedUser.Login;
-                _user.Password = updatedUser.Password;
+                var content = await response.Content.ReadAsStringAsync();
+                var users = JsonSerializer.Deserialize<List<User>>(content);
 
-                // Сохраняем данные в Preferences
-                Preferences.Set("UserSurname", updatedUser.Surname);
-                Preferences.Set("UserName", updatedUser.Name);
-                Preferences.Set("UserPatronymic", updatedUser.Patronymic ?? "");
-                Preferences.Set("UserLogin", updatedUser.Login);
-                Preferences.Set("UserPassword", updatedUser.Password);
-
-                // Обновляем UI
-                surnameLabel.Text = updatedUser.Surname;
-                nameLabel.Text = updatedUser.Name;
-                patronymicLabel.Text = updatedUser.Patronymic ?? "";
-                loginLabel.Text = updatedUser.Login;
-                passwordLabel.Text = updatedUser.Password;
-
-                await DisplayAlert("Успех", "Профиль успешно обновлен!", "OK");
-                await Navigation.PushAsync(new Profile(_user, _token));
-            }
-            else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-            {
-                await DisplayAlert("Ошибка", "Сессия истекла. Авторизуйтесь снова.", "OK");
-                await Navigation.PushAsync(new Views.Login());
+                Users.Clear();
+                foreach (var user in users)
+                {
+                    Users.Add(user);
+                }
             }
             else
             {
-                await DisplayAlert("Ошибка", $"Не удалось обновить профиль: {responseContent}", "OK");
+                var errorContent = await response.Content.ReadAsStringAsync();
+                await DisplayAlert("ГЋГёГЁГЎГЄГ ", $"ГЉГ®Г¤: {response.StatusCode}, ГЋГІГўГҐГІ: {errorContent}", "ГЋГЉ");
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Exception: {ex.Message}");
-            await DisplayAlert("Ошибка", $"Произошла ошибка: {ex.Message}", "OK");
+            await DisplayAlert("ГЋГёГЁГЎГЄГ ", $"ГЏГ°Г®ГЁГ§Г®ГёГ«Г  Г®ГёГЁГЎГЄГ : {ex.Message}", "ГЋГЉ");
         }
     }
+    private async void ButtonUserEdit(object sender, EventArgs e)
+    {
+        await Navigation.PushAsync(new EditProfile(_user, _token));
+    }
+
 }
